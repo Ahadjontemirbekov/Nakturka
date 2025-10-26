@@ -131,8 +131,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 MEDIA_URL = '/media/'
 
-# settings.py
-import os
-
-TELEGRAM_BOT_TOKEN = os.environ.get("8247922895:AAFAwuGynmBGVWWClgc7nwxJnPErmSB-hwU", "")   # yoki to'g'ridan-to'g'ri yozma, lekin bu xavfsiz emas
-TELEGRAM_CHAT_ID = os.environ.get("6642743434", "")
