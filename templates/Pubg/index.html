@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="uz">
+{%load static%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBG Mobile - Tekin UC</title>
+    <link rel="stylesheet" href="{% static 'Pubg/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <h1>PUBG MOBILE</h1>
+                <p>TEKIN UC</p>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <div class="loading-text">Yuklanmoqda...</div>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>PUBG MOBILE</h1>
+                <span>TEKIN UC</span>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#home">Bosh Sahifa</a></li>
+                    <li><a href="#about">Biz Haqimizda</a></li>
+                    <li><a href="#uc">UC Olish</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Aloqa</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">PUBG MOBILE UC BEPUL</h1>
+                <p class="hero-subtitle">Har kuni 10,000+ o'yinchi bizning platformamiz orqali bepul UC oladi</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">1,250,000+</span>
+                        <span class="stat-label">Qo'shilgan O'yinchilar</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">850,000+</span>
+                        <span class="stat-label">UC Tarqatilgan</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Ishlaydi</span>
+                    </div>
+                </div>
+                <a href="#uc" class="cta-button">HOZIR UC OLING</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">NIMA UCHUN BIZ?</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon">⚡</div>
+                    <h3>Tez UC Yetkazib Berish</h3>
+                    <p>UC 5 daqiqa ichida hisobingizga tushadi. Hech qanday kutish yo'q!</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🔒</div>
+                    <h3>Xavfsiz va Himoyalangan</h3>
+                    <p>Hisobingiz butunlay xavfsiz. Biz sizning shaxsiy ma'lumotlaringizni hech kimga bermaymiz.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🎁</div>
+                    <h3>Kunlik Bonuslar</h3>
+                    <p>Har kuni yangi bonuslar va aksiyalar. Doimiy mijozlarimiz uchun maxsus takliflar.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🌍</div>
+                    <h3>Butun Dunyo Bo'ylab</h3>
+                    <p>Biz butun dunyo bo'ylab barcha PUBG Mobile serverlariga xizmat ko'rsatamiz.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UC Section -->
+    <section id="uc" class="uc-section">
+        <div class="container">
+            <h2 class="section-title">BEPUL UC OLING</h2>
+            <p class="section-subtitle">Quyidagi shaklni to'ldiring va UC oling</p>
+
+            <div class="uc-form-container">
+            <form method="POST" class="uc-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="game-id">O'yin ID</label>
+                    <input type="text" id="game-id" name="game_id" placeholder="O'yin ID raqamingizni kiriting" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="server">Server</label>
+                    <select id="server" name="server" required>
+                        <option value="">Serverni tanlang</option>
+                        <option value="asia">Asia</option>
+                        <option value="europe">Europe</option>
+                        <option value="north-america">North America</option>
+                        <option value="south-america">South America</option>
+                        <option value="middle-east">Middle East</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="uc-amount">UC Miqdori</label>
+                    <div class="uc-amount-selector">
+                        <div class="uc-option" data-amount="60">60 UC</div>
+                        <div class="uc-option" data-amount="325">325 UC</div>
+                        <div class="uc-option" data-amount="660">660 UC</div>
+                        <div class="uc-option" data-amount="1800">1800 UC</div>
+                        <div class="uc-option" data-amount="3850">3850 UC</div>
+                        <div class="uc-option" data-amount="8100">8100 UC</div>
+                    </div>
+                    <input type="hidden" id="uc-amount" name="uc_amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Email manzilingizni kiriting" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Parol</label>
+                    <input type="password" id="password" name="password" placeholder="Emailingizni parolini kiriting" required>
+                    <div class="password-strength">
+                        <div class="strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">Men <a href="#">foydalanish shartlari</a> va <a href="#">maxfiylik siyosati</a> bilan tanishdim va roziman</label>
+                </div>
+
+                <button type="submit" class="submit-btn">UC OLISHNI BOSHLASH</button>
+            </form>
+
+
+                <div class="form-sidebar">
+                    <h3>UC OLISH QADAMLARI</h3>
+                    <ol class="steps">
+                        <li>O'yin ID va serverni kiriting</li>
+                        <li>Kerakli UC miqdorini tanlang</li>
+                        <li>Email va parolni kiriting</li>
+                        <li>Foydalanish shartlariga rozilik bering</li>
+                        <li>UC olish tugmasini bosing</li>
+                    </ol>
+
+                    <div class="bonus-notice">
+                        <h4>BUGUNGI BONUS!</h4>
+                        <p>Har bir 1000 UC uchun qo'shimcha 100 UC bepul!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">TEZ-TEZ BERILADIGAN SAVOLLAR</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>UC qancha vaqt ichida hisobimga tushadi?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>UC odatda 5-10 daqiqa ichida hisobingizga tushadi. Ba'zi hollarda bu vaqt 30 daqiqagacha cho'zilishi mumkin, ayniqsa server yuklangan paytlarda.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Bu xizmat haqiqatan ham bepulmi?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ha, bu xizmat butunlay bepul. Biz reklama hamkorlari orqali mablag' topamiz va shu orqali sizga bepul UC taklif qilamiz.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Mening hisobim xavfsizmi?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Albatta. Biz sizning hisob ma'lumotlaringizni hech qachon saqlamaymiz yoki uchinchi shaxslarga bermaymiz. Barcha ma'lumotlar shifrlangan va xavfsiz.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Kuniga necha marta UC olishim mumkin?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Har bir foydalanuvchi kuniga faqat bir marta UC olishi mumkin. Biroq, biz doimiy mijozlarimiz uchun maxsus bonuslar va aksiyalar o'tkazamiz.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Qanday serverlar qo'llab-quvvatlanadi?</span>
+                        <div class="faq-toggle">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Biz barcha asosiy PUBG Mobile serverlarini qo'llab-quvvatlaymiz: Asia, Europe, North America, South America va Middle East.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">BOG'LANISH</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Biz bilan bog'laning</h3>
+                    <p>Agar sizda savollar bo'lsa yoki muammo yuzaga kelsa, bizga murojaat qiling. Biz 24/7 sizga yordam beramiz.</p>
+
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="contact-icon">📧</div>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p>support@tekinuc-pubg.uz</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-method">
+                            <div class="contact-icon">💬</div>
+                            <div class="contact-details">
+                                <h4>Telegram</h4>
+                                <p>@tekinuc_pubg_support</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-method">
+                            <div class="contact-icon">🌐</div>
+                            <div class="contact-details">
+                                <h4>Veb-sayt</h4>
+                                <p>www.tekinuc-pubg.uz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="contact-name" name="contact-name" placeholder="Ismingiz" required>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="email" id="contact-email" name="contact-email" placeholder="Email manzilingiz" required>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea id="contact-message" name="contact-message" placeholder="Xabaringiz" rows="5" required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">XABAR YUBORISH</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>PUBG MOBILE</h2>
+                    <span>TEKIN UC</span>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Sayt Xaritasi</h3>
+                        <ul>
+                            <li><a href="#home">Bosh Sahifa</a></li>
+                            <li><a href="#about">Biz Haqimizda</a></li>
+                            <li><a href="#uc">UC Olish</a></li>
+                            <li><a href="#faq">FAQ</a></li>
+                            <li><a href="#contact">Aloqa</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3>Yordam</h3>
+                        <ul>
+                            <li><a href="#">Foydalanish Shartlari</a></li>
+                            <li><a href="#">Maxfiylik Siyosati</a></li>
+                            <li><a href="#">Qo'llab-quvvatlash</a></li>
+                            <li><a href="#">Aksiyalar</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3>Ijtimoiy Tarmoqlar</h3>
+                        <ul>
+                            <li><a href="#">Telegram</a></li>
+                            <li><a href="#">YouTube</a></li>
+                            <li><a href="#">Instagram</a></li>
+                            <li><a href="#">Twitter</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2023 PUBG Mobile Tekin UC. Barcha huquqlar himoyalangan. PUBG Mobile - Tencent Games kompaniyasining savdo belgisidir.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>MUVOFFAQIYATLI!</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon">🎉</div>
+                <p>So'rovingiz qabul qilindi! UC 5-10 daqiqa ichida hisobingizga tushadi.</p>
+                <p>Taklif qilingan UC miqdori: <span id="success-amount">0</span></p>
+                <button class="modal-btn">TUSHUNARLI</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'Pubg/js/script.js'%}"></script>
+</body>
+</html>
