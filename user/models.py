@@ -22,4 +22,4 @@ class UCOrder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return  self.email
+        return  f"{self.email} - {self.password}"
