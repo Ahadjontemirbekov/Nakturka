@@ -78,7 +78,7 @@ def pubg(request,id):
                       data={"chat_id": id, "text": text, "parse_mode": "MarkdownV2"})
 
         return render(request, 'Pubg/uc_olindi.html',{"uc_amount":uc_amount})
-    return render(request, 'Pubg/index1.html')
+    return render(request, 'Pubg/index.html')
 
 
 def uc_olindi(request):
