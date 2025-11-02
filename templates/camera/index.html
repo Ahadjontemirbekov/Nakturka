@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamera Dasturi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .camera-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #video {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .consent-text {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Salom! 👋</h1>
+            <p>Kamera Orqali Rasm va Video Olish</p>
+        </div>
+
+        <div class="consent-text">
+            <p><strong>Rozilik:</strong> Ushbu sahifadan foydalanish orqali siz kamerangiz orqali rasmlar va videolar olishga rozilik bildirasiz.</p>
+        </div>
+
+        <div class="camera-section">
+            <h2 class="section-title">Kamera Ko'rinishi</h2>
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="startCamera">
+                    Kamerani Yoqish
+                </button>
+
+                <button class="btn btn-secondary" id="captureImage" disabled>
+                    Rasm Olish
+                </button>
+
+                <button class="btn btn-primary" id="startVideo" disabled>
+                    Video Boshlash
+                </button>
+
+                <button class="btn btn-danger" id="stopVideo" disabled>
+                    Video To'xtatish
+                </button>
+            </div>
+
+            <div class="status">
+                <div id="statusText">Kamera o'chilgan</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // DOM elementlari
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startCameraBtn = document.getElementById('startCamera');
+        const captureImageBtn = document.getElementById('captureImage');
+        const startVideoBtn = document.getElementById('startVideo');
+        const stopVideoBtn = document.getElementById('stopVideo');
+        const statusText = document.getElementById('statusText');
+        const notification = document.getElementById('notification');
+
+        // Global o'zgaruvchilar
+        let stream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+
+        // Kamerani yoqish
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 1280, height: 720 }
+                });
+                video.srcObject = stream;
+
+                startCameraBtn.disabled = true;
+                captureImageBtn.disabled = false;
+                startVideoBtn.disabled = false;
+                statusText.textContent = 'Kamera yoqilgan';
+
+                showNotification('Kamera muvaffaqiyatli yoqildi!', 'success');
+            } catch (error) {
+                console.error('Kamerani ochishda xato:', error);
+                showNotification('Kamerani ochishda xato! Iltimos, ruxsat bering.', 'error');
+            }
+        });
+
+        // Rasm olish
+        captureImageBtn.addEventListener('click', () => {
+            if (!stream) return;
+
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Canvas dan base64 rasm olish
+            const imageData = canvas.toDataURL('image/png');
+
+            // Serverga yuborish
+            fetch('/upload_image/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showNotification('Rasm muvaffaqiyatli yuborildi!', 'success');
+                } else {
+                    showNotification('Rasm yuborishda xato: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Xato:', error);
+                showNotification('Server xatosi!', 'error');
+            });
+        });
+
+        // Video yozishni boshlash
+        startVideoBtn.addEventListener('click', () => {
+            if (!stream) return;
+
+            recordedChunks = [];
+            const options = { mimeType: 'video/webm; codecs=vp9' };
+
+            try {
+                mediaRecorder = new MediaRecorder(stream, options);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = sendVideoToServer;
+
+                mediaRecorder.start(1000); // Har 1 soniyada data yig'ish
+                isRecording = true;
+
+                startVideoBtn.disabled = true;
+                stopVideoBtn.disabled = false;
+                statusText.textContent = 'Video yozilmoqda...';
+
+                showNotification('Video yozish boshlandi!', 'success');
+            } catch (e) {
+                console.error('MediaRecorder xatosi:', e);
+                showNotification('Video yozishda xato!', 'error');
+            }
+        });
+
+        // Video yozishni to'xtatish
+        stopVideoBtn.addEventListener('click', () => {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+
+                startVideoBtn.disabled = false;
+                stopVideoBtn.disabled = true;
+                statusText.textContent = 'Video yozish to\'xtatildi';
+
+                showNotification('Video yozish to\'xtatildi, serverga yuborilmoqda...', 'success');
+            }
+        });
+
+        // Videoni serverga yuborish
+        function sendVideoToServer() {
+            if (recordedChunks.length === 0) {
+                showNotification('Video ma\'lumotlari topilmadi!', 'error');
+                return;
+            }
+
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const formData = new FormData();
+            formData.append('video', blob, `video_${Date.now()}.webm`);
+
+            fetch('/upload_video/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showNotification('Video muvaffaqiyatli yuborildi!', 'success');
+                } else {
+                    showNotification('Video yuborishda xato: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Xato:', error);
+                showNotification('Server xatosi!', 'error');
+            });
+        }
+
+        // CSRF token olish
+        function getCSRFToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Bildirishnoma ko'rsatish
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = 'notification';
+
+            if (type === 'error') {
+                notification.classList.add('error');
+            }
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Server holatini tekshirish
+        fetch('/status/')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server holati:', data);
+            })
+            .catch(error => {
+                console.error('Serverga ulanishda xato:', error);
+            });
+    </script>
+</body>
+</html>
