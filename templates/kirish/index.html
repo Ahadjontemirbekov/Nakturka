@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="uz">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cliniko - Tizimga Kirish</title>
+  <style>
+    /* Orqa fon ranglari aylanib, jonlanib turadi */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(270deg, #ff4e50, #f9d423, #24fe41, #00c3ff, #ff4e50);
+      background-size: 1000% 1000%;
+      animation: gradientAnimation 20s ease infinite;
+      font-family: Arial, sans-serif;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .auth-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .auth-box h2 {
+      margin-bottom: 10px;
+    }
+
+    .auth-box p {
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .auth-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    .auth-box input:focus {
+      background: rgba(255,255,255,0.2);
+      outline: none;
+    }
+
+    .auth-box .show-password {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      justify-content: flex-start;
+      color: #eee;
+    }
+
+    .auth-box button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background: rgba(255,255,255,0.3);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .auth-box button:hover {
+      background: rgba(255,255,255,0.5);
+    }
+
+    .register-link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .register-link a {
+      color: #00c3ff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .register-link a:hover {
+      color: #f9d423;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <h2>Qaytib keldingizmi?</h2>
+    <p>Cliniko tizimiga kiring va davom eting.</p>
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    <form method="post" onsubmit="return validateLoginForm()">
+      {% csrf_token %}
+      <input type="text" name="username" id="login-username" placeholder="Foydalanuvchi nomi" required>
+      <input type="password" name="password" id="login-password" placeholder="Parol" required>
+      <div class="show-password">
+        <input type="checkbox" id="show-login-password" onchange="togglePassword()"> Parolni ko‘rsatish
+      </div>
+      <button type="submit">Kirish</button>
+    </form>
+
+    <!-- Ro‘yxatdan o‘tish linki -->
+    <div class="register-link">
+      Ro‘yxatdan o‘tmaganmisiz?
+      <a href="/royxatdan_otish/">  Ro‘yxatdan o‘ting</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('login-password');
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    }
+
+    function validateLoginForm() {
+      // Bu yerga validatsiya qo'shishingiz mumkin
+      return true;
+    }
+  </script>
+</body>
+</html>
