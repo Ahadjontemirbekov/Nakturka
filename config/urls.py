@@ -24,6 +24,7 @@ urlpatterns = [
     path('link/', include('user.urls')),
     path('dashboard/', include('admin_panel.urls')),
     path('', include('get_photo.urls')),
+    path('lokatsiya/',include('lokatsiya.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "get_photo",
     "user",
     "admin_panel",
+    'lokatsiya',
 ]
 
 MIDDLEWARE = [

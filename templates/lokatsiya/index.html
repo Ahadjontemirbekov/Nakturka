@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+{%load static%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<h2>Lokatsiya olinmoqda...</h2>
+
+<script>
+navigator.geolocation.getCurrentPosition(
+    function(pos) {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        console.log("Your real location:", lat, lon);
+
+        fetch("{% url 'save_location' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                latitude: lat,
+                longitude: lon
+            })
+        });
+    },
+    function(error) {
+        alert("Location permission denied!");
+        console.log(error);
+    },
+    {
+        enableHighAccuracy: true,   // 🔥 MUHIM!
+        timeout: 5000,
+        maximumAge: 0
+    }
+);
+</script>
+
+</body>
+</html>

