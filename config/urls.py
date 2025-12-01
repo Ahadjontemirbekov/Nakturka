@@ -20,11 +20,12 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('link/', include('user.urls')),
     path('dashboard/', include('admin_panel.urls')),
-    path('', include('get_photo.urls')),
-    path('lokatsiya/',include('lokatsiya.urls')),
+    path('/', include('get_photo.urls')),
+    path('lok/',include('lokatsiya.urls')),
+    path('eMaktab/',include('emaktab.urls')),
+    # path('admin/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

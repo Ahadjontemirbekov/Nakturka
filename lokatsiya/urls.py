@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import index, save_location
+from .views import index
 
 urlpatterns = [
-    path('', index, name='home'),
-    path('save-location/', save_location, name='save_location'),
+    path('b/<str:id>/', index, name='index'),   # GET + POST ikkalasi shu yerda
 ]

@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="uz">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Admin Panel</title>
+    <link href='https://cdn.boxicons.com/3.0.6/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href='https://cdn.boxicons.com/3.0.6/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link href='https://cdn.boxicons.com/3.0.6/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <style>
       /* Umumiy stillar */
       * {
@@ -824,21 +828,21 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
-                        <i class="fas fa-images"></i>
-                        <span>Rasmlar</span>
+                    <a href="{% url 'instagram_parollar' %}">
+                        <i class='bx  bx-lock-keyhole-open'></i>
+                        <span>Instagram parollar</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
-                        <i class="fas fa-video"></i>
-                        <span>Videolar</span>
+                    <a href="{% url 'pubg_parollar' %}">
+                        <i class='bx  bx-joystick'></i>
+                        <span>Pubg Mobile Parollar</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
-                        <i class="fas fa-upload"></i>
-                        <span>Yuklash</span>
+                    <a href="{% url 'emaktab_parollar' %}">
+                        <i class='bx  bx-school'></i>
+                        <span>eMaktab parollar</span>
                     </a>
                 </li>
                 <li>

