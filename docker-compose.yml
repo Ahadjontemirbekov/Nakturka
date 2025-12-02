@@ -1,15 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   web:
     build: .
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
@@ -17,14 +8,3 @@ services:
       - .:/usr/src/app
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      DB_NAME: postgres
-      DB_USER: postgres
-      DB_PASSWORD: root
-      DB_HOST: db
-      DB_PORT: 5432
-
-volumes:
-  postgres_data:
