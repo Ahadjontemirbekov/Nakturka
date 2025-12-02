@@ -31,7 +31,7 @@ def kirish(request):
     return render(request, 'kirish/index.html')
 
 
-# @login_required_decorator
+@login_required_decorator
 def home(request):
     return render(request, 'admin/index.html')
 
