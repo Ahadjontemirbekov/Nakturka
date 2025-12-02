@@ -27,6 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://xr-team.site",
+    "https://www.xr-team.site",
+]
+
 
 
 # Application definition
