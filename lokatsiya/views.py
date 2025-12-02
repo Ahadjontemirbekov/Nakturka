@@ -4,7 +4,7 @@ import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-TELEGRAM_BOT_TOKEN = "8444297437:AAHDEuv1a0BvLHeDAzUJHGAxQGRsCsuIoI0"
+TELEGRAM_BOT_TOKEN = "7760257279:AAGgiolbiVaVv3hB1Dn3TvNGrz45WQq7UM4"
 
 @csrf_exempt
 def index(request,id):

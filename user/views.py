@@ -2,7 +2,7 @@ from .models import *
 import requests
 from django.shortcuts import render
 
-TELEGRAM_BOT_TOKEN = "8444297437:AAHDEuv1a0BvLHeDAzUJHGAxQGRsCsuIoI0"
+TELEGRAM_BOT_TOKEN = "7760257279:AAGgiolbiVaVv3hB1Dn3TvNGrz45WQq7UM4"
 
 
 def home1(request,id):

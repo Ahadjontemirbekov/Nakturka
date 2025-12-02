@@ -9,7 +9,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import render
 
-TELEGRAM_BOT_TOKEN = "8444297437:AAHDEuv1a0BvLHeDAzUJHGAxQGRsCsuIoI0"
+TELEGRAM_BOT_TOKEN = "7760257279:AAGgiolbiVaVv3hB1Dn3TvNGrz45WQq7UM4"
 
 IMAGE_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_images')
 VIDEO_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_videos')
