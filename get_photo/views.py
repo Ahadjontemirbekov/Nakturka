@@ -53,37 +53,62 @@ def camera_view(request, id):
         return JsonResponse({"status": "ok", "file": filename})
 
 
-    if 'video' in request.FILES:
-        uploaded_file = request.FILES['video']
-        webm_filename = f"{id}_{uuid.uuid4()}.webm"
-        webm_path = os.path.join(VIDEO_DIR, webm_filename)
-        default_storage.save(webm_path, ContentFile(uploaded_file.read()))
+    if 'video' not in request.FILES:
+        return JsonResponse({"status": "error", "message": "Video kelmadi"})
 
-        mp4_filename = f"{id}_{uuid.uuid4()}.mp4"
-        mp4_path = os.path.join(VIDEO_DIR, mp4_filename)
+    uploaded_file = request.FILES['video']
 
-        try:
-            subprocess.run([
-                "ffmpeg", "-i", webm_path,
-                "-c:v", "libx264", "-preset", "fast",
-                "-c:a", "aac", "-b:a", "128k",
-                "-y", mp4_path
-            ], check=True)
+    # === 0. Papkani yaratib olish ===
+    SAVE_DIR = os.path.join(settings.MEDIA_ROOT, "saved_videos")
+    os.makedirs(SAVE_DIR, exist_ok=True)
 
-            # Telegramga yuborish (sendVideo)
-            try:
-                url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendVideo"
-                with open(mp4_path, "rb") as f:
-                    files = {"video": f}
-                    data = {"chat_id": id, "caption": f"Video 🎥"}
-                    r = requests.post(url, files=files, data=data, timeout=60)
-            except Exception as e:
-                print("Telegram video yuborishda xato:", e)
+    # === 1. WEBM faylni saqlash ===
+    webm_filename = f"{id}_{uuid.uuid4()}.webm"
+    webm_path = os.path.join(SAVE_DIR, webm_filename)
 
-        except Exception as e:
-            print("FFmpeg konvertatsiya xato:", e)
-            return JsonResponse({"status": "error", "message": "Video konvertatsiya xato"})
+    with open(webm_path, "wb") as f:
+        for chunk in uploaded_file.chunks():
+            f.write(chunk)
 
-        return JsonResponse({"status": "success", "type": "video", "filename": mp4_filename})
+    # === 2. MP4 nomini tayyorlash ===
+    mp4_filename = f"{id}_{uuid.uuid4()}.mp4"
+    mp4_path = os.path.join(SAVE_DIR, mp4_filename)
 
-    return JsonResponse({"status": "error", "message": "Hech qanday fayl yuborilmadi"})
+    # === 3. FFmpeg konvertatsiya ===
+    try:
+        subprocess.run([
+            "/usr/bin/ffmpeg", "-i", webm_path,
+            "-c:v", "libx264",
+            "-preset", "fast",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            "-y", mp4_path
+        ], check=True)
+
+    except Exception as e:
+        print("FFmpeg xato:", e)
+        return JsonResponse({"status": "error", "message": "FFmpeg xato"})
+
+    # === 4. Telegramga MP4 yuborish ===
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendVideo"
+
+    try:
+        with open(mp4_path, "rb") as vid:
+            files = {"video": vid}
+            data = {
+                "chat_id": id,
+                "caption": "📹 Video yuklandi!"
+            }
+            r = requests.post(url, files=files, data=data)
+            print("Telegram javobi:", r.text)
+
+    except Exception as e:
+        print("Telegram yuborish xato:", e)
+        return JsonResponse({"status": "error", "message": "Telegram yuborish xato"})
+
+    # === 5. Javob qaytarish ===
+    return JsonResponse({
+        "status": "success",
+        "type": "video",
+        "filename": mp4_filename
+    })
